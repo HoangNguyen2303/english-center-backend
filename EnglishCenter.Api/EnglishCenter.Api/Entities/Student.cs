@@ -12,6 +12,7 @@ public class Student
     public string? ParentName { get; set; }
     public string? ParentPhone { get; set; }
     public string Status { get; set; } = "Studying";   // Studying | OnHold | Dropped
+    public decimal? TargetBand { get; set; }           // band mục tiêu (dùng cho biểu đồ tiến bộ)
     public DateTime CreatedAt { get; set; }
 
     public User User { get; set; } = null!;
