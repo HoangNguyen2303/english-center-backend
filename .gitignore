@@ -399,3 +399,7 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+
+# File giáo viên / học viên upload khi chạy local
+EnglishCenter.Api/EnglishCenter.Api/wwwroot/uploads/*
+!EnglishCenter.Api/EnglishCenter.Api/wwwroot/uploads/.gitkeep

@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EnglishCenter.Api.Data;
 
-public class AppDbContext : DbContext
+public partial class AppDbContext : DbContext
 {
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
@@ -63,6 +63,7 @@ public class AppDbContext : DbContext
             e.Property(x => x.ParentName).HasMaxLength(150);
             e.Property(x => x.ParentPhone).HasMaxLength(20);
             e.Property(x => x.Status).HasMaxLength(20).IsRequired();
+            e.Property(x => x.TargetBand).HasPrecision(3, 1);
             e.Property(x => x.CreatedAt).HasDefaultValueSql("SYSUTCDATETIME()");
 
             e.HasOne(x => x.User).WithOne(u => u.Student)
@@ -220,5 +221,8 @@ public class AppDbContext : DbContext
             e.Property(x => x.Phone).HasMaxLength(20);
             e.ToTable(t => t.HasCheckConstraint("CK_CenterSettings_SingleRow", "[Id] = 1"));
         });
+
+        // ---------- Các bảng cho chức năng Teacher (xem AppDbContext.Teacher.cs) ----------
+        ConfigureTeacherFeatures(b);
     }
 }

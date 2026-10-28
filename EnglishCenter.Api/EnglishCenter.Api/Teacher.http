@@ -1,0 +1,210 @@
+@host = http://localhost:5220
+# Đăng nhập rồi dán token vào đây
+@token = DAN_TOKEN_TEACHER_VAO_DAY
+
+### Đăng nhập giáo viên demo
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{ "email": "teacher@demo.com", "password": "123456" }
+
+### 1. Dashboard
+GET {{host}}/api/teacher/dashboard
+Authorization: Bearer {{token}}
+
+### 2. Lịch dạy tuần (đổi date để xem tuần khác; view=month để xem tháng)
+GET {{host}}/api/teacher/schedule?view=week&date=2026-11-02&includeAvailability=true
+Authorization: Bearer {{token}}
+
+### 2. Khai báo lịch rảnh 1 kèm 1, lặp 4 tuần
+POST {{host}}/api/teacher/schedule/availability
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "date": "2026-11-07", "startTime": "09:00:00", "endTime": "11:00:00", "note": "Luyện Speaking", "repeatWeeks": 4 }
+
+### 3. Lớp của tôi
+GET {{host}}/api/teacher/classes?status=Upcoming
+Authorization: Bearer {{token}}
+
+### 3. Chi tiết lớp 1
+GET {{host}}/api/teacher/classes/1
+Authorization: Bearer {{token}}
+
+### 3. Danh sách buổi học lớp 1
+GET {{host}}/api/teacher/classes/1/sessions
+Authorization: Bearer {{token}}
+
+### 3. Giáo án (syllabus)
+GET {{host}}/api/teacher/classes/1/syllabus
+Authorization: Bearer {{token}}
+
+### 3. Gắn bài 1 cho buổi 1
+PUT {{host}}/api/teacher/sessions/1/lesson
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "syllabusLessonId": 1, "isTaught": false }
+
+### 3. Thêm link video cho buổi 1
+POST {{host}}/api/teacher/sessions/1/materials
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "title": "Video bài 1", "kind": "Video", "url": "https://www.youtube.com/watch?v=example" }
+
+### 4. Bảng điểm danh buổi 1
+GET {{host}}/api/teacher/sessions/1/attendance
+Authorization: Bearer {{token}}
+
+### 4. Lưu điểm danh (chỉ được từ 30 phút trước giờ học)
+PUT {{host}}/api/teacher/sessions/1/attendance
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "items": [ { "studentId": 1, "status": "Present" } ] }
+
+### 5. Danh sách bài tập
+GET {{host}}/api/teacher/assignments?classId=1
+Authorization: Bearer {{token}}
+
+### 5. Giao bài Writing
+POST {{host}}/api/teacher/assignments
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "classId": 1, "skill": "Writing", "type": "Writing",
+  "title": "Task 1 - Line graph", "prompt": "The graph below shows...",
+  "dueAt": "2026-11-20T23:59:00", "minWords": 150, "allowLate": true, "assignToAll": true
+}
+
+### 5. Học viên chưa nộp bài 1 + nhắc
+GET {{host}}/api/teacher/assignments/1/missing
+Authorization: Bearer {{token}}
+
+###
+POST {{host}}/api/teacher/assignments/1/remind
+Authorization: Bearer {{token}}
+
+### 6. Bài chờ chấm
+GET {{host}}/api/teacher/grading/submissions?status=pending
+Authorization: Bearer {{token}}
+
+### 6. Mở trang chấm bài 1
+GET {{host}}/api/teacher/grading/submissions/1
+Authorization: Bearer {{token}}
+
+### 6. Lưu nháp điểm + highlight lỗi
+PUT {{host}}/api/teacher/grading/submissions/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "tr": 6, "cc": 6, "lr": 6.5, "gra": 5.5,
+  "feedback": "Bài viết có bố cục rõ ràng. Chú ý lỗi chính tả 'effect' -> 'affect'.",
+  "annotations": [
+    { "startOffset": 0, "endOffset": 9, "selectedText": "Nowadays,", "errorType": "Coherence", "suggestion": "In recent years," }
+  ]
+}
+
+### 6. Công bố điểm
+POST {{host}}/api/teacher/grading/submissions/1/publish
+Authorization: Bearer {{token}}
+
+### 6. Mô tả band + nhận xét mẫu
+GET {{host}}/api/teacher/grading/band-descriptors?skill=Writing
+Authorization: Bearer {{token}}
+
+###
+GET {{host}}/api/teacher/grading/comment-templates?skill=Writing
+Authorization: Bearer {{token}}
+
+### 7. Tạo bài kiểm tra giữa kỳ
+POST {{host}}/api/teacher/exams
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "classId": 1, "title": "Kiểm tra giữa kỳ", "type": "Midterm", "examDate": "2026-12-01", "durationMinutes": 90, "maxScore": 10 }
+
+### 7. Nhập điểm tay
+PUT {{host}}/api/teacher/exams/1/results
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "items": [ { "studentId": 1, "score": 7.5 } ] }
+
+### 7. Sổ điểm + trọng số + xuất Excel
+GET {{host}}/api/teacher/classes/1/gradebook
+Authorization: Bearer {{token}}
+
+###
+PUT {{host}}/api/teacher/classes/1/grade-config
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "assignmentWeight": 20, "periodicWeight": 0, "midtermWeight": 30, "finalWeight": 50, "passScore": 5 }
+
+###
+GET {{host}}/api/teacher/classes/1/gradebook/export
+Authorization: Bearer {{token}}
+
+### 8. Học viên + hồ sơ tiến bộ
+GET {{host}}/api/teacher/students
+Authorization: Bearer {{token}}
+
+###
+GET {{host}}/api/teacher/students/1
+Authorization: Bearer {{token}}
+
+### 8. Nhận xét tháng
+POST {{host}}/api/teacher/students/1/reviews
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "classId": 1, "period": "Monthly", "periodLabel": "11/2026", "attitude": "Chăm chỉ, tích cực phát biểu", "improvements": "Cần luyện thêm Speaking Part 2" }
+
+### 8. Phiếu cuối khóa (HTML để in)
+GET {{host}}/api/teacher/students/1/final-report/print?classId=1
+Authorization: Bearer {{token}}
+
+### 9. Yêu cầu từ học viên
+GET {{host}}/api/teacher/requests?status=Pending
+Authorization: Bearer {{token}}
+
+### 9. Duyệt yêu cầu 1
+POST {{host}}/api/teacher/requests/1/approve
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "note": "Hẹn em trên Google Meet" }
+
+### 9. Gửi thông báo cho cả lớp
+POST {{host}}/api/teacher/announcements
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "classId": 1, "title": "Đổi phòng học", "content": "Buổi tối thứ 4 lớp học tại phòng P102." }
+
+### 9. Chuông thông báo
+GET {{host}}/api/teacher/notifications/unread-count
+Authorization: Bearer {{token}}
+
+### 10. Hồ sơ, bảng công, đánh giá
+GET {{host}}/api/teacher/profile
+Authorization: Bearer {{token}}
+
+###
+GET {{host}}/api/teacher/profile/timesheet?month=2026-11
+Authorization: Bearer {{token}}
+
+###
+GET {{host}}/api/teacher/profile/ratings
+Authorization: Bearer {{token}}
+
+### 10. Đổi mật khẩu
+POST {{host}}/api/teacher/profile/change-password
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "currentPassword": "123456", "newPassword": "12345678", "confirmPassword": "12345678" }

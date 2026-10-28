@@ -12,6 +12,14 @@ builder.Services.AddScoped<TokenService>();
 builder.Services.AddScoped<EnrollmentService>();
 builder.Services.AddScoped<ScheduleService>();
 
+// Chức năng Teacher
+builder.Services.AddScoped<SessionService>();
+builder.Services.AddScoped<NotificationService>();
+builder.Services.AddScoped<FileStorageService>();
+builder.Services.AddScoped<StatsService>();
+builder.Services.AddScoped<SubmissionService>();
+builder.Services.AddScoped<GradebookService>();
+
 builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(opt =>
@@ -64,6 +72,9 @@ using (var scope = app.Services.CreateScope())
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     await db.Database.MigrateAsync();
     await DbSeeder.SeedAsync(db);
+    await TeacherSeeder.SeedCommentTemplatesAsync(db);
+    if (app.Environment.IsDevelopment())
+        await TeacherSeeder.SeedDemoAsync(db);
 }
 
 // Configure the HTTP request pipeline.
@@ -74,6 +85,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseHttpsRedirection();
+
+// Phục vụ file upload (tài liệu, ảnh đề, audio) tại /uploads/...
+app.UseStaticFiles();
 
 app.UseAuthentication();
 app.UseAuthorization();
